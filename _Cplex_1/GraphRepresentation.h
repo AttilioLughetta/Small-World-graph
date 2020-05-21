@@ -2,6 +2,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include "floydWarshall.h"
+#include <algorithm>
 using namespace std;
 template <typename T>
 class GraphRepresentation 
@@ -18,6 +19,8 @@ public:
 	virtual unordered_set<T> getNeighbors(T i)const = 0;
 	virtual unordered_set<T> getAllVertices()const = 0;
 	virtual GraphRepresentation<T>* induction(unordered_set<T> vertices) = 0;
+	virtual GraphRepresentation<T>* inductionV(unordered_set<T> vertices, T vertex) = 0;
+	virtual void draw() = 0;
 	 bool newEdge(T a, T b);
 	 virtual  bool addEdge(T a, T b) { return false; };
 
@@ -126,7 +129,13 @@ public:
 			unordered_set <T> tmp = this->getNeighbors(v);
 			result.insert(tmp.begin(), tmp.end());
 		}
-
+		
+		for (T x : S)
+		{
+			//if(result.find(x))
+				result.erase(x);
+		}
+		
 		return result;
 	}
 	

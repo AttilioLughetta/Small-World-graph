@@ -138,12 +138,15 @@
     <ClCompile Include="Origine.cpp" />
     <ClCompile Include="MaxLocalAverageDistance.cpp" />
     <ClCompile Include="MinimumLocalClustering.cpp" />
+    <ClCompile Include="idfAlgorithm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graph.h" />
     <ClInclude Include="GraphRepresentation.h" />
     <ClInclude Include="floydWarshall.h" />
     <ClInclude Include="GraphT.h" />
+    <ClInclude Include="idfAlgorithm.h" />
+    <ClInclude Include="priorityFunction.h" />
     <ClInclude Include="Triangless.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="MinimumLocalClustering.h" />

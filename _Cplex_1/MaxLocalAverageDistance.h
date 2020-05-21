@@ -5,7 +5,7 @@
 template <typename T>
 double lad(GraphRepresentation<T> *g, T vertex)
 {
-	int count = 0;
+	double count = 0;
 	unordered_map<T, int> tmp = (g->getDist<T>()).at(vertex);
 	for (pair <T,int> i : tmp)
 	{

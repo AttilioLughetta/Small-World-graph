@@ -1,27 +1,35 @@
 #include <stdio.h>
 #include <iostream>
 #include "GraphT.h"
-#include"MaxLocalAverageDistance.h"
+//#include"MaxLocalAverageDistance.h"
 #include <ilcplex/ilocplex.h>
 #include"floydWarshall.h"
-#include "MinimumLocalClustering.h"
+//#include "MinimumLocalClustering.h"
 #include <set>
 #include "Triangless.h"
+#include"idfAlgorithm.h"
 using namespace std;
 
 ILOSTLBEGIN
 
 int main()
 {
-	int nvertex = 10;
-	int nedge = 40;
+	int nvertex = 379;
+	int nedge = 914;
 	GraphT<int> * g = new GraphT<int>(nvertex, false, false);
-	
-	
+
 	g->randIntPopulate(nedge);
 	g->draw();
-
-
+	double alpha = 0.7;
+	double lambda = 1.7;
+	unordered_set<int> best = idfAlgo <int>(alpha, lambda, g);
+	
+	cout <<"\nLa grandezza dell'insieme con queste caratteristiche è"<< best.size()<<"\n";
+	for (int a : best)
+		cout << a << " ";
+	
+	
+	/*
 	cout<<"\n "<<maxLocalAverageDistance<int>(g);
 	cout << "\n" << minimumLocalCluster<int>(g);
 	Triangles<int> *t = new Triangles<int>(g);
@@ -48,6 +56,12 @@ int main()
 	t->draw();
 
 	cout << "\t\t\t\t\t\t\t" << t->count();
+
+	
+
+
+
+
 	/**
 	unordered_set<int> a;
 	int s, d=0;	

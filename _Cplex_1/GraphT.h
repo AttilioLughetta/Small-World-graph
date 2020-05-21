@@ -111,16 +111,17 @@ bool newEdge(T source, T destination)
 	}
 
 
-	 GraphT<T>* inductionV(unordered_set<T> vertices, T vertex)
+	 GraphT<T>* inductionV(unordered_set<T> vertices, T vertex)override
 	{
-		vertices.insert(vertex);
+		 
+		 vertices.insert(vertex);
 		return induction(vertices);
 	}
 
 
 
 
-	void draw()
+	void draw()override
 	{
 		for (std::pair<T, unordered_set<T>> element : str)
 		{

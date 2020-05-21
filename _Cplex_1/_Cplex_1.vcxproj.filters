@@ -33,6 +33,9 @@
     <ClCompile Include="MinimumLocalClustering.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="idfAlgorithm.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graph.h">
@@ -60,6 +63,12 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="Triangless.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="priorityFunction.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="idfAlgorithm.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

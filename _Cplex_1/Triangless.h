@@ -1,4 +1,4 @@
-#pragma once
+
 
 #pragma once
 #include <queue>
@@ -160,6 +160,33 @@ public:
 		return ret;
 
 	}
+
+
+	unordered_set<T> popAsSet()
+	{
+		auto greater = triangles.rbegin();
+		auto greaterSet = greater->second;
+		auto greaterTriangle = greaterSet.begin();
+
+
+
+		triangle<T> ret = *greaterTriangle;
+		greaterSet.erase(greaterTriangle);
+
+
+		if ((greaterSet).empty())
+			triangles.erase(greater->first);
+
+		else
+			triangles[greater->first] = greaterSet;
+
+		return ret.getVerteces();
+
+	}
+
+
+
+
 
 	bool empty()
 	{

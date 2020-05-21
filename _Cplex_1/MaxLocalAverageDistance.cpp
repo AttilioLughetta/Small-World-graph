@@ -1,35 +1,33 @@
-#include"MaxLocalAverageDistance.h"
 #include "GraphRepresentation.h"
 #include<vector>
-using namespace std;
 
 //localAverageDistance
 template <typename T>
-int lad(GraphRepresentation<T> *g, T vertex)
+double lad(GraphRepresentation<T> *g, T vertex)
 {
-	unordered_map < T<unordered_map<T, int>> a = g->getDist<T>();
-	unordered_map<T, int> tmp = g.getDist(T); 
-	for (auto i=tmp.begin(); i !=tmp.end(); i++)
+	int count = 0;
+	unordered_map<T, int> tmp = (g->getDist<T>()).at(vertex);
+	for (pair <T, int> i : tmp)
 	{
 		if (i.first != vertex)
-			count += i.second;
+			count = count + i.second;
+
+
 	}
-	return count / (g.getN() - 1);
+	return count / (g->getN() - 1);
 }
 
 //maxLocalAvarageDistance
 template <typename T>
-int maxLocalAverageDistance(GraphRepresentation<T>  *g)
+double maxLocalAverageDistance(GraphRepresentation<T> *g)
 {
-	
-	int max = 0;
-	int c;
-	
-	unordered_set<T> tmp = g.getAllVertices();
-	for (auto i =tmp.begin() ; i != tmp.end(); i++)
+
+	double max = 0;
+	double c;
+	unordered_set<T> tmp = g->getAllVertices();
+	for (T i : tmp)
 	{
-		c = lad(g, i);
-		
+		c = lad<T>(g, i);
 		max = c > max ? c : max;
 	}
 	return max;

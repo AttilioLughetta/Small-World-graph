@@ -13,10 +13,11 @@ template< typename T > double localClusterCoefficient(GraphRepresentation <T> *g
 
 	for (T x :n1)
 	{
-		unordered_set <T> n2 = g->getNeighbors(x);
-		for (T y : n2)
+		                       /*g->getNeighbors(x);*/
+		for (T y : n1)
 		{
-			if (g->hasEdge(y, vertex))
+			if (x != y)
+				if (g->hasEdge(y, x))
 				count++;
 		}
 	}
@@ -24,7 +25,7 @@ template< typename T > double localClusterCoefficient(GraphRepresentation <T> *g
 	if (!g->isOriented())
 		return  (count) / (nn*(nn - 1));
 	else
-		return (count) / ((nn*(nn - 1)) / 2);
+		return (count) / ((nn*(nn - 1)) /*/ 2*/);
 
 }
 
