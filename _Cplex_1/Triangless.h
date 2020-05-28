@@ -205,7 +205,7 @@ public:
 			
 			auto triangleSet= triangles[key];
 			triangleSet.erase(t);
-			t.draw();
+			//t.draw();
 			if (triangleSet.empty())
 				triangles.erase(key);
 			else

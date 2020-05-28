@@ -8,9 +8,12 @@
 #include <set>
 #include "Triangless.h"
 #include"priorityFunction.h"
+#include <time.h>
 using namespace std;
 template<typename T>
-unordered_set<T> idfAlgo(double alpha, double lambda, GraphRepresentation<T> *g) {
+unordered_set<T> idfAlgo(double alpha, double lambda, GraphRepresentation<T> *g, double & endtime) {
+	
+	time_t start = time(NULL);
 
 	//All triangles in g  sorted in the deacreasing order of sum of degrees
 	Triangles<T> *t = new Triangles<T>(g);
@@ -30,14 +33,15 @@ unordered_set<T> idfAlgo(double alpha, double lambda, GraphRepresentation<T> *g)
 			for (T v : sv->getSorted())
 			{
 				GraphRepresentation<T> *induced = g->inductionV(S, v);
-				induced->draw();
+				//induced->draw();
 				double mLAD = maxLocalAverageDistance(induced);
 				double mLC = minimumLocalCluster(induced);
-				cout << "\n" << mLAD << " " << mLC;
+				
 
 				if ((mLAD <= lambda) && (mLC >= alpha))
 				{
 					S1.insert(v);
+					delete induced;
 					break;
 				}
 			}
@@ -48,11 +52,16 @@ unordered_set<T> idfAlgo(double alpha, double lambda, GraphRepresentation<T> *g)
 		GraphRepresentation<T> * h = g->induction(S);
 		Triangles<T> *tr = new Triangles<T>(h);
 		t->removeTriangles(tr->getTriangles());
+		delete tr;
 		//Updating the best
 		if (S.size() > best.size())
 			best = S;
 
 
 	}
+
+	endtime = difftime(time(NULL), start);
+
+	delete t;
 	return best;
 }
