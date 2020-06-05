@@ -1,5 +1,4 @@
 
-
 #pragma once
 #include <queue>
 #include <set>
@@ -75,10 +74,6 @@ namespace std
 
 
 
-
-
-
-
 //Data Structure T  storing triangles
 
 
@@ -119,6 +114,31 @@ private:
 		return tmp;
 	}
 
+	map<int, unordered_set<triangle<T>>> snaiveAlgo(GraphRepresentation<T> *graph)
+	{
+		map<int, unordered_set<triangle<T>>> tmp;
+		triangle<T> *tri;
+		unordered_set<triangle<T>> triangless;
+
+		for (T x : graph->getAllVertices())
+		{
+			for (T y : graph->getNeighbors(x))
+				for (T z : graph->getNeighbors(y))
+					if (graph->hasEdge(x, z))
+					{
+
+						int degree = graph->getDegree(x) + graph->getDegree(y) + graph->getDegree(z);
+						tri = new triangle<T>(x, y, z);
+						triangless = tmp[degree];
+						triangless.emplace(*tri);
+						tmp[degree] = triangless;
+
+					}
+
+		}
+
+		return tmp;
+	}
 
 public:
 	Triangles(GraphRepresentation <T> *g)
@@ -126,6 +146,12 @@ public:
 		graph = g;
 		triangles = naiveAlgo(g);
 	}
+
+	~Triangles() {
+		this->triangles.clear();
+		
+	}
+
 
 	
 	void draw()

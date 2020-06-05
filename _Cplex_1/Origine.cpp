@@ -14,23 +14,31 @@
 #include<ctime>
 using namespace std;
 
-ILOSTLBEGIN
+
 
 int main()
 {
 	
-	double seconds = 0;
+	string fileName ="krebs";
+	bool random = false;
 	double alpha = 0.7;
 	double lambda = 1.7;
 	int nvertex=138;
 	int nedge=493;
+
+
+	double seconds = 0;
 	int count=1 ;
 	vector <int> result;
 	time_t currentTime;
 	time(&currentTime);
 	char buffer[80];
 	struct tm *localTime = localtime(&currentTime);
-	strftime(buffer, 80, "Log\\Result_%I_%M_%p_%d_%m_%Y.txt", localTime);
+	
+	//strftime(buffer, 80, "Log\\Result_%I_%M_%p_%d_%m_%Y.txt", localTime);
+	strftime(buffer, 80, "Log\\f1_vs_f2_on krebs.txt", localTime);
+
+
 	ofstream f(buffer);
 	if (!f)
 		return -1;
@@ -42,18 +50,30 @@ int main()
 		strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);
 		//Graph Creation
 		f << "\n\n";
-		f  <<buffer << "Run n# " << count <<" with nvertex:"<<nvertex<<" and nedge :" << nedge<< endl;
+
 		GraphT<int> * g = new GraphT<int>(nvertex, false, false);
+		
+		if (random)
+			g->randIntPopulate(nedge);
+		else
+			g->createFromFile("E:\\Tesi\\Papers\\Network\\"+fileName+".txt");
+		
+		
+		g->draw();
 		cplexSolver *Solver = new cplexSolver(g);
-		g->randIntPopulate(nedge);
+		
 		f << "Graph created" << endl;
+		if (random)
+			f << buffer << "Run n# " << count << " with nvertex:" << g->getN() << " and nedge :" << nedge << endl;
+		else
+			f << buffer << "Run n# " << count << " on " << fileName << " Dataset" << endl;
+		
 		//Cplex_solver
 		try {
 			char buffer[80];
 			time(&currentTime);
 			struct tm *localTime = localtime(&currentTime);
-			strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);
-			
+			strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);			
 			f <<buffer<< "Risultati Solver: ";
 			vector<int> vec = Solver->Solve(alpha, lambda,seconds);
 			f << vec.size() << "  ::: ";
@@ -68,17 +88,21 @@ int main()
 		}
 		//Idf algo
 		try {
-			time(&currentTime);
-			char buffer[80];
-			struct tm *localTime = localtime(&currentTime);
-			strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);
-			f <<buffer<< "Risultati Idf:    ";
-			unordered_set<int> best = idfAlgo <int>(alpha, lambda, g, seconds);
-			f << best.size() << "  ::: ";
-			for (auto a : best)
-				f << a << " ";
-			f << " in " << seconds << " seconds";
-			f << endl;
+			int function = 0;
+			do {
+				function++;
+				time(&currentTime);
+				char buffer[80];
+				struct tm *localTime = localtime(&currentTime);
+				strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);
+				f << buffer << "Risultati Idf"<<function<<":   ";
+				unordered_set<int> best = idfAlgo<int>(alpha, lambda, g, seconds, function);
+				f << best.size() << "  ::: ";
+				for (auto a : best)
+					f << a << " ";
+				f << " in " << seconds << " seconds";
+				f << endl;
+			} while (function < 2);
 		}
 		catch (exception) {
 			f << endl;

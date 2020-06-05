@@ -104,7 +104,8 @@ public:
 
 		IloArray<IloNumVarArray> z(env, n + 1);
 		for (int i = 1; i <= n; i++) {
-			int degree =Deg(i);
+			int degree = Deg(i); 
+			if (degree < 2) degree = 2;
 			z[i] = IloNumVarArray(env, degree + 1);
 			z[i][1] = IloNumVar(env, 0, 0, ILOFLOAT, name.str().c_str()); // Almeno Grado 2
 			for (auto j = 2; j <= degree; j++) {
@@ -386,8 +387,7 @@ public:
 
 		}
 		model.add(three);
-
-
+		
 
 		//Constraint 5a
 
@@ -466,14 +466,16 @@ public:
 
 		// Create the solver object
 		IloCplex cplex(model);
-
 		// Export model to file (useful for debugging!)
 		cplex.exportModel("model.lp");
 		
 		
 		//Setting time limit
-		cplex.setParam(IloCplex::TiLim, 360);
+		cplex.setParam(IloCplex::TiLim, 3600);
+		
+		
 		bool solved = false;
+
 		
 		try {
 			// Try to solve with CPLEX 

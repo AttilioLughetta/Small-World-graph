@@ -20,6 +20,8 @@ public:
 	virtual unordered_set<T> getAllVertices()const = 0;
 	virtual GraphRepresentation<T>* induction(unordered_set<T> vertices) = 0;
 	virtual GraphRepresentation<T>* inductionV(unordered_set<T> vertices, T vertex) = 0;
+	virtual GraphRepresentation<T>* vertexInduction( T s, GraphRepresentation<T> * graph) = 0;
+	virtual void deleteVertex(T v) = 0;
 	virtual void draw() = 0;
 	 bool newEdge(T a, T b);
 	 virtual  bool addEdge(T a, T b) { return false; };
@@ -36,6 +38,20 @@ public:
 		oriented = 0;
 		
 	}
+
+	 void setN(int num)
+	 {
+		 n = num;
+	 }
+	 void npp()
+	 {
+		 n = n + 1;
+	 }
+	 void nmm()
+	 {
+		 n = n - 1;
+	 }
+
 	bool isOriented()const { return oriented; }
 
 
@@ -49,9 +65,9 @@ public:
 		this->dist = a;
 	}
 
-	template<typename T>unordered_map<T, unordered_map<T, int>> getDist( )
+	template<typename T>unordered_map<T, unordered_map<T, int>> getDist(bool update )
 	{
-		if (this->dist.empty())
+		if (this->dist.empty()||update)
 		{ 
 			unordered_map<T,unordered_map<T,int>> tmp =  computeDistance<T>();
 			setDist<T>(tmp);

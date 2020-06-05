@@ -1,69 +1,132 @@
+
+
 #pragma once
 #include <queue>
 #include <set>
+#include <map>
 #include <iostream>
 #include<tuple>
 #include "GraphRepresentation.h"
 
+//Single triangle
 
 
+class triangle {
+	set<int> verteces;
 
-
-
-template <typename T>struct Compare
-{
 public:
-	bool operator() (const pair<tuple<T, T, T>, int>&  a, const pair<tuple<T, T, T>, int>& b)const
+	triangle(int a, int b, int c)
 	{
-		if ((a.second > b.second)||(a.second==b.second&& ((get<0>(a.first)+1)*(get<1>(a.first)+1)*(get<2>(a.first)+1) > (get<0>(b.first)+1)*(get<1>(b.first)+1)*(get<2>(b.first)+1)) ))
-			return true;
-		else
-		{
-			return false;
-			
-			
-			
-			/*if (a.second == b.second)
-			{
-				if (get<0>(a.first) > get<0>(b.first))
-					return true;
-				else
-				{
-					if (get<1>(a.first) > get<1>(b.first))
-						return true;
-					else
-					{
-						if (get<2>(a.first) > get<2>(b.first))
-							return true;
-					}
-				}
-			}*/
-
-			return  false;
-		}
+		verteces.insert(a);
+		verteces.insert(b);
+		verteces.insert(c);
 	}
+	set<int> getV()const
+	{
+		return verteces;
+	}
+
+	unordered_set<int> getVerteces()const
+	{
+		
+		unordered_set <int> tmp;
+		for (int a : verteces)
+			tmp.insert(a);
+		return tmp;
+	}
+
+	void draw()
+	{
+		cout << "\n";
+		for (int a : getVerteces())
+		{
+			cout << " " << a;
+		}
+
+	}
+
 };
 
 
+bool operator < (const triangle & a, const triangle & b)
+{
 
-
-template <typename T>
-class Triangle {
-private:
-	set< pair<tuple<T, T, T>, int>,   Compare<T>> t;
-	GraphRepresentation<T> *graph;
-	set< pair<tuple<T, T, T>, int>, Compare<T>>  naiveAlgo(GraphRepresentation<T> *graph)
+	for (int x : a.getV())
 	{
-		set< pair<tuple<T, T, T>, int>, Compare<T>>  tmp;
-		for (T x : graph->getAllVertices())
+		for (int y : b.getV())
+			if (x != y)
+				return (x < y);
+
+	}
+}
+
+bool operator == (const triangle & a, const triangle & b)
+{
+	bool ret = false;
+	for (int x : a.getVerteces())
+	{
+		ret = false;
+		for (int y : b.getVerteces())
+			if (x == y)
+				ret = true;
+		if (!ret)
+			return false;
+	}
+	return ret;
+
+}
+/*
+namespace std
+{
+	
+	struct hash<triangle>
+	{
+		size_t
+			operator()(triangle  obj) const
 		{
-			for (T y : graph->getNeighbors(x))
-				for (T z : graph->getNeighbors(y))
+			int ret = 1;
+			for (int a : obj.getVerteces())
+				ret = ret * (a + 1);
+			return hash<int>()(ret);
+		}
+	};
+}
+
+*/
+
+
+//Data Structure T  storing triangles
+
+
+
+
+
+class Triangles {
+private:
+
+
+	map<int, set<triangle>> triangles;
+	GraphRepresentation<int> *graph;
+
+
+	map<int, set<triangle>> naiveAlgo(GraphRepresentation<int> *graph)
+	{
+		map<int, set<triangle>> tmp;
+		triangle *tri;
+		set<triangle> triangless;
+
+		for (int x : graph->getAllVertices())
+		{
+			for (int y : graph->getNeighbors(x))
+				for ( int z : graph->getNeighbors(y))
 					if (graph->hasEdge(x, z))
 					{
-						int degree = graph->getDegree(x) + graph->getDegree(y) + graph->getDegree(z);
-						tmp.emplace(make_pair(make_tuple(x, y, z), degree));
 
+						int degree = graph->getDegree(x) + graph->getDegree(y) + graph->getDegree(z);
+						tri = new triangle(x, y, z);
+						triangless = tmp[degree];
+						triangless.emplace(*tri);
+						tmp[degree] = triangless;
 
 					}
 
@@ -73,23 +136,124 @@ private:
 	}
 
 
-public :
-
-	
-	Triangle(GraphRepresentation <T> *g)
+public:
+	Triangles(GraphRepresentation <int> *g)
 	{
 		graph = g;
-		t = naiveAlgo(g);
+		triangles = naiveAlgo(g);
 	}
-	
+
+	~Triangles() {
+		this->triangles.clear();
+
+	}
+
+
+
 	void draw()
 	{
-		for (pair<tuple<T, T, T>, int> aa : t)
-		{
-			cout << "\n" << get<0>(aa.first) << " " << get<1>(aa.first) << "  " << get<2>(aa.first) << " con  grado :" << aa.second;
+
+		for (auto itr = triangles.begin(); itr != triangles.end(); ++itr) {
+			cout << "\nGrado :" << itr->first;
+			for (auto x : itr->second)
+				x.draw();
 		}
 	}
-	
+
+
+	triangle pop()
+	{
+		auto greater = triangles.rbegin();
+		auto greaterSet = greater->second;
+		auto greaterTriangle = greaterSet.begin();
+
+
+
+		triangle ret = *greaterTriangle;
+		greaterSet.erase(greaterTriangle);
+
+
+		if ((greaterSet).empty())
+			triangles.erase(greater->first);
+
+		else
+			triangles[greater->first] = greaterSet;
+
+		return ret;
+
+	}
+
+
+	unordered_set<int> popAsSet()
+	{
+		auto greater = triangles.rbegin();
+		auto greaterSet = greater->second;
+		auto greaterTriangle = greaterSet.begin();
+
+
+
+		triangle ret = *greaterTriangle;
+		greaterSet.erase(greaterTriangle);
+
+
+		if ((greaterSet).empty())
+			triangles.erase(greater->first);
+
+		else
+			triangles[greater->first] = greaterSet;
+
+		return ret.getVerteces();
+
+	}
+
+
+
+
+
+	bool empty()
+	{
+		return triangles.empty();
+	}
+
+
+	void removeTriangles(set<triangle> a)
+	{
+		int key;
+		for (triangle t : a)
+		{
+			key = 0;
+			for (int v : t.getVerteces())
+				key += graph->getDegree(v);
+
+			auto triangleSet = triangles[key];
+			triangleSet.erase(t);
+			
+			if (triangleSet.empty())
+				triangles.erase(key);
+			else
+				triangles[key] = triangleSet;
+
+		}
+	}
+
+
+	set <triangle> getTriangles()
+	{
+		set<triangle> ret;
+		for (auto itr = triangles.begin(); itr != triangles.end(); ++itr)
+			for (triangle x : itr->second)
+				ret.insert(x);
+		return ret;
+	}
+
+
+	int count()
+	{
+		int ret = 0;
+		for (auto itr = triangles.begin(); itr != triangles.end(); ++itr)
+			ret += itr->second.size();
+		return ret;
+	}
 
 
 };

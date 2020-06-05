@@ -22,9 +22,17 @@ class GraphT : public GraphRepresentation<T>
 	{
 		GraphRepresentation<T>::setParam(nvertex, isOriented, selfLoop);
 		
-		
-		
 
+	}
+
+	~GraphT()
+	{
+		str.clear();
+	}
+
+	int getN() 
+	{
+		return this->str.size();
 	}
 
 bool newEdge(T source, T destination)
@@ -110,6 +118,24 @@ bool newEdge(T source, T destination)
 		
 	}
 
+	void createFromFile(string path)
+	{
+		string line;
+		ifstream infile(path);
+		T a, b;		
+		while (getline(infile, line)&& !infile.eof())
+		{
+			istringstream iss(line);
+			int a, b;
+			if ((!(iss >> a >> b)) )  break; 
+			addEdge(a, b);
+			cout << "Adding Edge " << a << "  " << b << endl;
+		
+		}
+		GraphRepresentation<T>::setN(this->str.size());
+		
+
+	}
 
 	 GraphT<T>* inductionV(unordered_set<T> vertices, T vertex)override
 	{
@@ -117,6 +143,20 @@ bool newEdge(T source, T destination)
 		 vertices.insert(vertex);
 		return induction(vertices);
 	}
+
+
+	 void deleteVertex(T v)override
+	 {
+		 for (T n : this->getNeighbors(v))
+		 {
+			 unordered_set<T> tmp =str.at(n);
+			 tmp.erase(v);
+			 str.emplace(pair<T, unordered_set<T>>(n, tmp));
+		 }
+		 str.erase(v);
+		 this->nmm();
+
+	 }
 
 
 
@@ -144,6 +184,9 @@ bool newEdge(T source, T destination)
 
 	int getDegree(T i) const
 	{
+		if (str.find(i)==str.end())
+			return 0;
+
 		return str.at(i).size();
 	}
 	unordered_set<T> getNeighbors(T i)const 
@@ -225,7 +268,25 @@ bool newEdge(T source, T destination)
 		 return g;
 	 }
 
+	 GraphT<T>* vertexInduction( T s, GraphRepresentation<T> * graph)override
+	 {
+		 int n = getN();
+		 n++;
+		 GraphT<T> * g = new GraphT<T>(n, this->isOriented(), this->haveSelfLoop());
 
+			 // add vertex
+			 g->str.emplace(pair<T, unordered_set<T>>(s, NULL));
+			 // add edges 
+			 for (T d : this->getAllVertices())
+			 {
+				 if (graph->hasEdge(s, d))
+					 g->addEdge(s, d);
+			 }
+		 
+
+		 return g;
+			
+	 }
 
 
 	 };
