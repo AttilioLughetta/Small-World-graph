@@ -1,3 +1,4 @@
+/*
 #include "GraphRepresentation.h"
 #include <vector>
 #include <unordered_set>
@@ -39,3 +40,4 @@ template< typename T > double TminimumLocalCluster(GraphRepresentation <T> g, un
 			min = c < min ? c : min;
 		}
 }
+*/

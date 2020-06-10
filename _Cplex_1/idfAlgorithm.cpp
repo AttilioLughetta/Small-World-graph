@@ -1,3 +1,4 @@
+/*
 #include <stdio.h>
 #include <iostream>
 #include "GraphT.h"
@@ -51,4 +52,4 @@ unordered_set<T> idfAlgo(double alpha, double lambda, GraphRepresentation<T> *g)
 
 	}
 	return best;
-}
+}*/

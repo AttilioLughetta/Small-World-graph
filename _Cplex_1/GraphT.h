@@ -30,10 +30,19 @@ class GraphT : public GraphRepresentation<T>
 		str.clear();
 	}
 
+	int getN() const
+	{
+		cout << "usa questo" << endl;
+		return this->str.size();
+	}
+
 	int getN() 
 	{
 		return this->str.size();
 	}
+
+
+
 
 bool newEdge(T source, T destination)
 	{
@@ -147,14 +156,17 @@ bool newEdge(T source, T destination)
 
 	 void deleteVertex(T v)override
 	 {
-		 for (T n : this->getNeighbors(v))
+		 
+		 for(T el : this->getAllVertices())
 		 {
-			 unordered_set<T> tmp =str.at(n);
+			 unordered_set<T> tmp =str.at(el);
 			 tmp.erase(v);
-			 str.emplace(pair<T, unordered_set<T>>(n, tmp));
+			 str.emplace(pair<T, unordered_set<T>>(el, tmp));
 		 }
+		 
 		 str.erase(v);
 		 this->nmm();
+		 GraphRepresentation<T>::setN(this->str.size());
 
 	 }
 
@@ -172,7 +184,13 @@ bool newEdge(T source, T destination)
 		}
 	}
 	
-	
+	int hasVertex(T s) const
+	{
+		return (str.find(s) != str.end());
+	}
+
+
+
 	int hasEdge(T s, T d) const
 	{
 		if (str.find(s) == str.end())
@@ -181,6 +199,9 @@ bool newEdge(T source, T destination)
 			return 1;
 		return 0;
 	 }
+
+
+
 
 	int getDegree(T i) const
 	{
@@ -245,7 +266,7 @@ bool newEdge(T source, T destination)
 
 
 		}
-
+		GraphRepresentation<T>::setN(this->str.size());
 		return ret;
 	}
 
@@ -268,24 +289,21 @@ bool newEdge(T source, T destination)
 		 return g;
 	 }
 
-	 GraphT<T>* vertexInduction( T s, GraphRepresentation<T> * graph)override
+	 GraphT<T>* vertexInduction( T s, GraphRepresentation<T> * originalGraph)override
 	 {
-		 int n = getN();
-		 n++;
-		 GraphT<T> * g = new GraphT<T>(n, this->isOriented(), this->haveSelfLoop());
 
-			 // add vertex
-			 g->str.emplace(pair<T, unordered_set<T>>(s, NULL));
-			 // add edges 
-			 for (T d : this->getAllVertices())
-			 {
-				 if (graph->hasEdge(s, d))
-					 g->addEdge(s, d);
-			 }
-		 
+		 GraphRepresentation<T>::npp();
+		 this->str.emplace(pair<T, unordered_set<T>>(s, NULL));
+		 for (T d : this->getAllVertices())
+		 {
+			 if (originalGraph->hasEdge(s, d))
+				 this->addEdge(s, d);
+			 GraphRepresentation<T>::setN(this->str.size());
+			 GraphRepresentation<T>::getDist<T>(true);
+			 return this;
 
-		 return g;
 			
+		 }
 	 }
 
 

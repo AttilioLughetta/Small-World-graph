@@ -1,3 +1,4 @@
+/*
 #include "GraphRepresentation.h"
 #include<vector>
 
@@ -31,4 +32,4 @@ double maxLocalAverageDistance(GraphRepresentation<T> *g)
 		max = c > max ? c : max;
 	}
 	return max;
-}
+}*/

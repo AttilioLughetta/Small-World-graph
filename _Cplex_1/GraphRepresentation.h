@@ -15,6 +15,8 @@ private:
 
 public: 
 	virtual int hasEdge(T s, T d)const = 0 ;
+	virtual int getN() { return n; }
+	virtual int hasVertex(T s )const = 0;
 	virtual int getDegree(T i)const = 0;
 	virtual unordered_set<T> getNeighbors(T i)const = 0;
 	virtual unordered_set<T> getAllVertices()const = 0;
@@ -25,10 +27,6 @@ public:
 	virtual void draw() = 0;
 	 bool newEdge(T a, T b);
 	 virtual  bool addEdge(T a, T b) { return false; };
-
-	
-
-
 
 
 
@@ -54,8 +52,7 @@ public:
 
 	bool isOriented()const { return oriented; }
 
-
-	int getN() { return n; }
+	
 
 	bool haveSelfLoop() { return selfLoop; }
 
@@ -90,45 +87,32 @@ public:
 		unordered_map<T, unordered_map<T, int>> dist;
 		unordered_set <T> vertices = getAllVertices();
 		
-		
-
-		//for (auto itr = vertices.begin(); itr != vertices.end(); ++itr)
 		for (auto itr : vertices)
 		{
 			//Putting in dist direct edge's Graph
 			unordered_map  <T, int> m;
 			m.clear();
-			//for (auto nei = vertices.begin(); nei != vertices.end(); ++nei)
+			
 			for (auto nei : vertices)
 			{
 				if (hasEdge(itr, nei)) dist[itr][nei] = 1;
-					//m.insert(nei, 1);
+					
 				else dist[itr][nei] = vertices.size()*vertices.size();
-					//m.insert(nei, std::numeric_limits<int>::max());
+					
 			}
-			//dist.insert(itr, m);
-
 		}
-		//Updaditing shortest paths
-
+		
 		for (auto k : vertices)
 		{
 			for (auto i : vertices)
 			{
 				for (auto j : vertices)
 				{
-					/*if (dist.at(i).at(k) + dist.at(k).at(j) < dist.at(i).at(j))
-					{
-						int tmp = dist.at(i).at(k) + dist.at(k).at(j);
-						dist.insert(i, pair <T, int>(j, tmp));
-					}*/
-					// << "\n  " << dist[i][j];
 					int x = dist[i][k]; 
 					int y = dist[k][j];
 					int z = dist[i][j];
 					if ((x + y) < z)
 						dist[i][j] = x+y;
-					//dist.at(i).insert(j, x + y);
 				}
 
 			}
@@ -148,7 +132,6 @@ public:
 		
 		for (T x : S)
 		{
-			//if(result.find(x))
 				result.erase(x);
 		}
 		

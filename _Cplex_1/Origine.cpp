@@ -12,6 +12,7 @@
 #include "cplexSolver.h"
 #include <fstream>
 #include<ctime>
+#include "Grasp.h"
 using namespace std;
 
 
@@ -19,13 +20,13 @@ using namespace std;
 int main()
 {
 	
-	string fileName ="krebs";
+	string fileName ="anna";
 	bool random = false;
 	double alpha = 0.7;
 	double lambda = 1.7;
 	int nvertex=138;
 	int nedge=493;
-
+	int GraspSeconds = 2;
 
 	double seconds = 0;
 	int count=1 ;
@@ -36,7 +37,7 @@ int main()
 	struct tm *localTime = localtime(&currentTime);
 	
 	//strftime(buffer, 80, "Log\\Result_%I_%M_%p_%d_%m_%Y.txt", localTime);
-	strftime(buffer, 80, "Log\\f1_vs_f2_on krebs.txt", localTime);
+	strftime(buffer, 80, "Log\\f1_vs_f2_on anna2.txt", localTime);
 
 
 	ofstream f(buffer);
@@ -67,18 +68,39 @@ int main()
 			f << buffer << "Run n# " << count << " with nvertex:" << g->getN() << " and nedge :" << nedge << endl;
 		else
 			f << buffer << "Run n# " << count << " on " << fileName << " Dataset" << endl;
+
 		
+		
+		try {
+			int function = 0;
+			do {
+				function++;
+				unordered_set<int> bests = GRASProcedure(g, alpha, lambda, GraspSeconds, seconds,function);
+			
+				time(&currentTime);
+				struct tm *localTime = localtime(&currentTime);
+				strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);
+				f <<buffer << "Risultati Grasp"<<function<<":  " << bests.size() <<"  ::: " <<  " in " << seconds << " seconds con TL a: " <<GraspSeconds<< endl;
+			} while (function < 2);
+		}catch(exception_ptr){
+			f << endl;
+			f << "Crash Grasp" << endl;
+		}
+
+
+
 		//Cplex_solver
 		try {
 			char buffer[80];
 			time(&currentTime);
 			struct tm *localTime = localtime(&currentTime);
 			strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);			
+
 			f <<buffer<< "Risultati Solver: ";
-			vector<int> vec = Solver->Solve(alpha, lambda,seconds);
-			f << vec.size() << "  ::: ";
-			for(auto a : vec)
-			f<<a<<" ";
+			//vector<int> vec = Solver->Solve(alpha, lambda,seconds);
+			//f << vec.size() << "  ::: ";
+			//for(auto a : vec)
+			//f<<a<<" ";
 			f << " in " << seconds << " seconds";
 			f << endl;
 		}

@@ -101,15 +101,23 @@ public:
 
 		for (T v : verteces)
 		{
-			GraphRepresentation<T> *ga = this->graph->vertexInduction(v, graph);
-			int deg = ga->getDegree(v);
-			//tmp.emplace(pair<T, int>(v, deg));
+			/*GraphRepresentation<T> *ga = this->graph->vertexInduction(v, graph);
+			int deg = ga->getDegree(v);*/
+			int deg = 0;
+			for (T el : graph->getNeighbors(v))
+			{
+				if (induced->hasVertex(el))
+					deg++;
+			}
+
 			tmp[v] = deg;
 
 		}
 
 		this->degrees = tmp;
 		sortVertices2();
+		//delete ga;
+		
 	}
 
 

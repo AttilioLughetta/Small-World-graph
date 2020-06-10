@@ -24,7 +24,7 @@ double maxLocalAverageDistance(GraphRepresentation<T> *g)
 	double max = 0;
 	double c;
 	unordered_set<T> tmp = g->getAllVertices();
-	//g->getDist<T>(true);
+	
 	for (T i:tmp)
 	{
 		c = lad<T>(g, i);
