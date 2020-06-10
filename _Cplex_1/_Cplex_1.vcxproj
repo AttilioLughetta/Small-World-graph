@@ -163,14 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cplexSolver.cpp" />
-    <ClCompile Include="floydWarshall.cpp" />
-    <ClCompile Include="Graph.cpp" />
-    <ClCompile Include="GraphRepresentation.cpp" />
     <ClCompile Include="Origine.cpp" />
-    <ClCompile Include="MaxLocalAverageDistance.cpp" />
-    <ClCompile Include="MinimumLocalClustering.cpp" />
-    <ClCompile Include="idfAlgorithm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cplexSolver.h" />
@@ -178,7 +171,9 @@
     <ClInclude Include="GraphRepresentation.h" />
     <ClInclude Include="floydWarshall.h" />
     <ClInclude Include="GraphT.h" />
+    <ClInclude Include="Grasp.h" />
     <ClInclude Include="idfAlgorithm.h" />
+    <ClInclude Include="RestrictedCandidateList.h" />
     <ClInclude Include="priorityFunction.h" />
     <ClInclude Include="Triangless.h" />
     <ClInclude Include="Triangle.h" />
