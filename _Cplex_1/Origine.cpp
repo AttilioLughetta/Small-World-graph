@@ -2,10 +2,8 @@
 #include <ilcplex/ilocplex.h>
 #include <iostream>
 #include "GraphT.h"
-//#include"MaxLocalAverageDistance.h"
 #include <ilcplex/ilocplex.h>
 #include"floydWarshall.h"
-//#include "MinimumLocalClustering.h"
 #include <set>
 #include "Triangless.h"
 #include"idfAlgorithm.h"
@@ -20,13 +18,13 @@ using namespace std;
 int main()
 {
 	
-	string fileName ="anna";
+	string fileName ="queen8";
 	bool random = false;
 	double alpha = 0.7;
 	double lambda = 1.7;
 	int nvertex=138;
 	int nedge=493;
-	int GraspSeconds = 2;
+	int GraspSeconds = 15;
 
 	double seconds = 0;
 	int count=1 ;
@@ -37,10 +35,11 @@ int main()
 	struct tm *localTime = localtime(&currentTime);
 	
 	//strftime(buffer, 80, "Log\\Result_%I_%M_%p_%d_%m_%Y.txt", localTime);
-	strftime(buffer, 80, "Log\\f1_vs_f2_on anna2.txt", localTime);
+	strftime(buffer, 80, "Log\\f1_vs_f2_on queen8.8.txt", localTime);
 
 
-	ofstream f(buffer);
+	ofstream f;
+	f.open(buffer, std::ofstream::out | std::ofstream::app);
 	if (!f)
 		return -1;
 	do
@@ -80,7 +79,10 @@ int main()
 				time(&currentTime);
 				struct tm *localTime = localtime(&currentTime);
 				strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);
-				f <<buffer << "Risultati Grasp"<<function<<":  " << bests.size() <<"  ::: " <<  " in " << seconds << " seconds con TL a: " <<GraspSeconds<< endl;
+				f << buffer << "Risultati Grasp" << function << ":  " << bests.size() << "  ::: ";
+				for (auto a : bests)
+					f << a << " ";
+				f<< " in " << seconds << " seconds con TL a: " << GraspSeconds << endl;
 			} while (function < 2);
 		}catch(exception_ptr){
 			f << endl;
@@ -144,7 +146,7 @@ int main()
 
 
 
-	} while (1);
+	} while (0);
 	
 	
 	

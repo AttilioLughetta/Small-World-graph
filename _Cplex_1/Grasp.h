@@ -9,6 +9,7 @@
 #include "Triangless.h"
 #include"priorityFunction.h"
 #include <time.h>
+#include "OneFlip.h"
 
 using namespace std;
 
@@ -57,13 +58,11 @@ unordered_set<T> GRASProcedure(GraphRepresentation<T> *Graph,  double alpha, dou
 	
 	{
 		currentSolution = ConstructGreedyRandomizedSolution(Graph, seeds, alpha, lambda,priorityFunction);
-		//LocalSearch
-		
-		
-		
+		currentSolution = oneFilp(currentSolution, Graph, alpha, lambda, priorityFunction);
 		endtime = difftime(time(NULL), start);
 		if (currentSolution.size() > bestSolution.size())
 			bestSolution = currentSolution;
+		 currentSolution.clear();
 		seeds.clear();
 		if (!t->empty())
 			seeds = t->popAsSet();
@@ -74,6 +73,11 @@ unordered_set<T> GRASProcedure(GraphRepresentation<T> *Graph,  double alpha, dou
 		
 	}
 
+	 currentSolution.clear();
+	delete t;
+	 seeds.clear();
+
+	 endtime = difftime(time(NULL), start);
 	return bestSolution;
 
 }

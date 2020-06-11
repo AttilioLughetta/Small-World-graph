@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include <queue>
 #include <set>
 #include <map>
@@ -83,6 +82,7 @@ public:
 	~sortedVerteces()
 	{
 		verteces.clear();
+		degrees.clear();
 	}
 	
 	

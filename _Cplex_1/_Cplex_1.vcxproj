@@ -173,6 +173,7 @@
     <ClInclude Include="GraphT.h" />
     <ClInclude Include="Grasp.h" />
     <ClInclude Include="idfAlgorithm.h" />
+    <ClInclude Include="OneFlip.h" />
     <ClInclude Include="RestrictedCandidateList.h" />
     <ClInclude Include="priorityFunction.h" />
     <ClInclude Include="Triangless.h" />

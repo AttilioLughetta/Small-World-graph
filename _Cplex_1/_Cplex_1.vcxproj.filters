@@ -62,6 +62,9 @@
     <ClInclude Include="Grasp.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="OneFlip.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Small_world.rc">

@@ -1,14 +1,11 @@
 #pragma once
-#pragma once
-#pragma once
 #include <queue>
 #include <set>
 #include <map>
 #include <iostream>
 #include "GraphRepresentation.h"
 #include <ctime>
-//#include"MaxLocalAverageDistance.h"
-//#include "MinimumLocalClustering.h"
+
 
 template<typename T>
 class RCL
@@ -87,6 +84,7 @@ public:
 	~RCL()
 	{
 		verteces.clear();
+		degrees.clear();
 	}
 
 	//1° priority function
