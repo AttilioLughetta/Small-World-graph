@@ -471,7 +471,10 @@ public:
 		
 		
 		//Setting time limit
-		cplex.setParam(IloCplex::TiLim, 3600);
+		cplex.setParam(IloCplex::TiLim, 3600*5);
+
+		//cplex.setParam(IloCplex::ParallelMode,-1);
+		//cplex.setParam(IloCplex::Param::Preprocessing::Presolve, false);
 		
 		
 		bool solved = false;

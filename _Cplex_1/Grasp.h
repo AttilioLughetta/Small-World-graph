@@ -49,6 +49,7 @@ unordered_set<T> GRASProcedure(GraphRepresentation<T> *Graph,  double alpha, dou
 	time_t start = time(NULL);
 	unordered_set<T> bestSolution;
 	unordered_set<T> currentSolution;
+	//Choosing a triangle as a seed
 	Triangles<T> *t = new Triangles<T>(Graph);
 	unordered_set<T> seeds = t->popAsSet();
 	bestSolution = seeds;
@@ -57,9 +58,12 @@ unordered_set<T> GRASProcedure(GraphRepresentation<T> *Graph,  double alpha, dou
 	while (timelimit>endtime&& seeds.size()>0)
 	
 	{
+		//Building a solution
 		currentSolution = ConstructGreedyRandomizedSolution(Graph, seeds, alpha, lambda,priorityFunction);
+		//Local Search
 		currentSolution = oneFilp(currentSolution, Graph, alpha, lambda, priorityFunction);
 		endtime = difftime(time(NULL), start);
+		//Updating the best solution
 		if (currentSolution.size() > bestSolution.size())
 			bestSolution = currentSolution;
 		 currentSolution.clear();
@@ -68,9 +72,6 @@ unordered_set<T> GRASProcedure(GraphRepresentation<T> *Graph,  double alpha, dou
 			seeds = t->popAsSet();
 		else
 			break;
-		
-
-		
 	}
 
 	 currentSolution.clear();

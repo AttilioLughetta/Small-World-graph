@@ -18,16 +18,16 @@ using namespace std;
 int main()
 {
 	
-	string fileName ="queen8";
+	string fileName ="queen";
 	bool random = false;
 	double alpha = 0.7;
 	double lambda = 1.7;
 	int nvertex=138;
 	int nedge=493;
-	int GraspSeconds = 15;
+	int GraspSeconds = 60*20;
 
 	double seconds = 0;
-	int count=1 ;
+	int count=0 ;
 	vector <int> result;
 	time_t currentTime;
 	time(&currentTime);
@@ -35,15 +35,28 @@ int main()
 	struct tm *localTime = localtime(&currentTime);
 	
 	//strftime(buffer, 80, "Log\\Result_%I_%M_%p_%d_%m_%Y.txt", localTime);
-	strftime(buffer, 80, "Log\\f1_vs_f2_on queen8.8.txt", localTime);
+	strftime(buffer, 80, "Log\\Queens12.txt", localTime);
 
 
 	ofstream f;
 	f.open(buffer, std::ofstream::out | std::ofstream::app);
 	if (!f)
 		return -1;
-	do
+
+	//<string> filenames = { "queen8","queen9","queen10","queen11","queen12"};
+	vector <string> filenames = { "queen12"};
+	for(int a=0;a!=5;a++ )
 	{
+		
+		fileName = filenames[a];
+		
+		
+		
+		
+		
+		
+		
+		
 		char buffer[80];
 		time(&currentTime);
 		struct tm *localTime = localtime(&currentTime);
@@ -74,7 +87,8 @@ int main()
 			int function = 0;
 			do {
 				function++;
-				unordered_set<int> bests = GRASProcedure(g, alpha, lambda, GraspSeconds, seconds,function);
+				unordered_set<int> bests;
+				 bests = GRASProcedure(g, alpha, lambda, GraspSeconds, seconds,function);
 			
 				time(&currentTime);
 				struct tm *localTime = localtime(&currentTime);
@@ -99,10 +113,11 @@ int main()
 			strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);			
 
 			f <<buffer<< "Risultati Solver: ";
+			vector<int> vec;
 			//vector<int> vec = Solver->Solve(alpha, lambda,seconds);
-			//f << vec.size() << "  ::: ";
-			//for(auto a : vec)
-			//f<<a<<" ";
+			f << vec.size() << "  ::: ";
+			for(auto a : vec)
+			f<<a<<" ";
 			f << " in " << seconds << " seconds";
 			f << endl;
 		}
@@ -120,7 +135,8 @@ int main()
 				struct tm *localTime = localtime(&currentTime);
 				strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);
 				f << buffer << "Risultati Idf"<<function<<":   ";
-				unordered_set<int> best = idfAlgo<int>(alpha, lambda, g, seconds, function);
+				unordered_set<int> best;
+				//best = idfAlgo<int>(alpha, lambda, g, seconds, function);
 				f << best.size() << "  ::: ";
 				for (auto a : best)
 					f << a << " ";
@@ -146,7 +162,7 @@ int main()
 
 
 
-	} while (0);
+	} 
 	
 	
 	
