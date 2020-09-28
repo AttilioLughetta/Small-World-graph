@@ -13,20 +13,20 @@ using namespace std;
 
 
 template<typename T>
-unordered_set<T> idfAlgo(double alpha, double lambda, GraphRepresentation<T> *g, double & endtime, int function) {
+unordered_set<T> idfAlgo(double alpha, double lambda, GraphRepresentation<T> *g, double & endtime, int function, int expectedValue) {
 	
 	time_t start = time(NULL);
 
 	//All triangles in g  sorted in the deacreasing order of sum of degrees
 	Triangles<T> *t = new Triangles<T>(g);	unordered_set<T> best;
-	while (!t->empty())
+	while (!t->empty() && (best.size() < expectedValue) )
 	{
 		//Pick the first Triangle in T
 		unordered_set<T> S1 = t->popAsSet();
 		unordered_set<T> S;
 		S.clear();
 	
-		while (S.size() < S1.size())
+		while (S.size() < S1.size() )
 		{
 			S = S1;
 			GraphRepresentation<T> *induced = g->induction(S);
@@ -42,13 +42,13 @@ unordered_set<T> idfAlgo(double alpha, double lambda, GraphRepresentation<T> *g,
 				//induced->vertexInduction(g, v);
 				double mLAD = maxLocalAverageDistance(induced);
 				double mLC = minimumLocalCluster(induced);
+				delete induced;
 				//induced->deleteVertex(v);
 				
 				if ((mLAD <= lambda) && (mLC >= alpha))
 				{
 					S1.insert(v);
 					delete sv;
-					delete induced;
 					break;
 				}
 			}

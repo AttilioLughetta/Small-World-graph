@@ -88,7 +88,7 @@ public:
 	}
 
 	//1° priority function
-	RCL(unordered_set<T> CurrentSolutionSet, GraphRepresentation<T> *g, double alpha, double lambda, bool & full,float sizePercentage)
+	RCL(unordered_set<T> CurrentSolutionSet, GraphRepresentation<T> *g, double alpha, double lambda, bool & full,float sizePercentage, bool valueBased)
 	{
 		full = false;
 		graph = g;
@@ -118,17 +118,32 @@ public:
 		}
 		
 		sortVertices();
-		int newsize = (sizePercentage * verteces.size()) / 100;
+
+		int newsize;
+		if(! valueBased)
+			newsize = (sizePercentage * verteces.size()) / 100;
+		else
+		{
+			sizePercentage = sizePercentage / 100;
+			
+			float valueMin = g->getDegree( this->verteces[0]) - (sizePercentage * (g->getDegree(this->verteces[0]) - g->getDegree(this->verteces[verteces.size()-1]) ) );
+			newsize = 0;
+			for (T a : verteces)
+			{
+				if (g->getDegree(a)<valueMin)
+					break;
+				newsize++;
+			}
+		}
+		cout << "Rcl size : " << newsize << endl;
 		if (newsize > 0)
 			 this->verteces.resize(newsize);
 
-		
-		
-
-
 	}
+
+
 	//2° priority function
-	RCL(unordered_set<T> CurrentSolutionSet, GraphRepresentation<T> * graph,  double alpha, double lambda, bool & full,float sizePercentage, int function)
+	RCL(unordered_set<T> CurrentSolutionSet, GraphRepresentation<T> * graph,  double alpha, double lambda, bool & full,float sizePercentage, int function, bool valueBased)
 	{
 		
 		full = false;
@@ -165,7 +180,22 @@ public:
 		this->degrees = tmp;
 		sortVertices2();
 
-		int newsize = (sizePercentage * verteces.size()) / 100;
+		int newsize;
+		if (!valueBased)
+			newsize = (sizePercentage * verteces.size()) / 100;
+		else
+		{
+			sizePercentage = sizePercentage / 100;
+
+			float valueMin = degrees[this->verteces[0]] - (sizePercentage * (degrees[this->verteces[0]] - degrees[this->verteces[verteces.size() - 1]]));
+			newsize = 0;
+			for (T a : verteces)
+			{
+				if (degrees[a] < valueMin)
+					break;
+				newsize++;
+			}
+		}
 		if (newsize > 0)
 			this->verteces.resize(newsize);
 

@@ -11,20 +11,39 @@
 #include <fstream>
 #include<ctime>
 #include "Grasp.h"
+#include "SimulatedAnnealing.h"
 using namespace std;
 
 
 
-int main()
+int main(int argc, char *argv[])
 {
 	
 	string fileName ="queen";
 	bool random = false;
-	double alpha = 0.7;
-	double lambda = 1.7;
+	double alpha = 0.5;
+	double lambda = 2.0;
 	int nvertex=138;
 	int nedge=493;
-	int GraspSeconds = 60*20;
+	int GraspSeconds = 300;
+	int SAtimelimit = 100;
+	float sizePercentage = 60;
+	bool bestImprovement = true;
+	bool valueBased = false;
+	
+	
+	
+	if (argc > 2)
+	{
+		float sizePercentage = atoi(argv[1]);
+		
+		if (atoi(argv[2]) == 1)
+			bool bestImprovement = true;
+		if (atoi(argv[3]) == 1)
+			bool valueBased = true;
+	}
+
+	int expectedSolution = 10;
 
 	double seconds = 0;
 	int count=0 ;
@@ -35,7 +54,7 @@ int main()
 	struct tm *localTime = localtime(&currentTime);
 	
 	//strftime(buffer, 80, "Log\\Result_%I_%M_%p_%d_%m_%Y.txt", localTime);
-	strftime(buffer, 80, "Log\\Queens12.txt", localTime);
+	strftime(buffer, 80, "Log\\Migliorativi.txt", localTime);
 
 
 	ofstream f;
@@ -43,19 +62,15 @@ int main()
 	if (!f)
 		return -1;
 
-	//<string> filenames = { "queen8","queen9","queen10","queen11","queen12"};
-	vector <string> filenames = { "queen12"};
-	for(int a=0;a!=5;a++ )
+	//vector <string> filenames = { "david" };
+	vector <string> filenames = {/*"anna"* "dolphins",*/ "David"};
+	//vector <int> expectedSolutions = {33,50, 10,11,12,13,15 };
+	vector <int> expectedSolutions = {40,200,200 };
+	for(int a=0;a<filenames.size();a++ )
 	{
 		
+		expectedSolution = expectedSolutions[a];
 		fileName = filenames[a];
-		
-		
-		
-		
-		
-		
-		
 		
 		char buffer[80];
 		time(&currentTime);
@@ -81,14 +96,16 @@ int main()
 		else
 			f << buffer << "Run n# " << count << " on " << fileName << " Dataset" << endl;
 
-		
+		//Grasp
 		
 		try {
 			int function = 0;
 			do {
 				function++;
 				unordered_set<int> bests;
-				 bests = GRASProcedure(g, alpha, lambda, GraspSeconds, seconds,function);
+				 
+				if(g->getN()>0)
+					//bests = GRASProcedure(g, alpha, lambda, GraspSeconds, seconds,function,bestImprovement,valueBased, expectedSolution, sizePercentage);
 			
 				time(&currentTime);
 				struct tm *localTime = localtime(&currentTime);
@@ -103,6 +120,40 @@ int main()
 			f << "Crash Grasp" << endl;
 		}
 
+		//Simulated Anealing
+
+		try {
+			int function = 0;
+			do {
+				function++;
+				unordered_set<int> bests;
+
+				if (g->getN() > 0)
+
+					bests = SAProcedure(g, SAtimelimit, seconds, alpha, lambda, function, 100000, 0.9, 1, 12345, 1000, expectedSolution);
+					
+				time(&currentTime);
+				struct tm *localTime = localtime(&currentTime);
+				strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);
+				f << buffer << "Risultati Simulated Anealing" << function << ":  " << bests.size() << "  ::: ";
+				for (auto a : bests)
+					f << a << " ";
+				f << " in " << seconds << " seconds con TL a: " << SAtimelimit << endl;
+			} while (function < 2);
+		}
+		catch (exception_ptr) {
+			f << endl;
+			f << "Crash Simulated Anealing" << endl;
+		}
+
+
+
+
+
+
+
+
+
 
 
 		//Cplex_solver
@@ -114,7 +165,7 @@ int main()
 
 			f <<buffer<< "Risultati Solver: ";
 			vector<int> vec;
-			//vector<int> vec = Solver->Solve(alpha, lambda,seconds);
+			 //vec = Solver->Solve(alpha, lambda,seconds);
 			f << vec.size() << "  ::: ";
 			for(auto a : vec)
 			f<<a<<" ";
@@ -136,7 +187,7 @@ int main()
 				strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);
 				f << buffer << "Risultati Idf"<<function<<":   ";
 				unordered_set<int> best;
-				//best = idfAlgo<int>(alpha, lambda, g, seconds, function);
+				//best = idfAlgo<int>(alpha, lambda, g, seconds, function, expectedSolution);
 				f << best.size() << "  ::: ";
 				for (auto a : best)
 					f << a << " ";

@@ -14,28 +14,25 @@
 using namespace std;
 
 template<typename T>
-unordered_set<T> ConstructGreedyRandomizedSolution(GraphRepresentation<T> *Graph, unordered_set<T> seed, double alpha, double lambda, int priorityFunction)
+unordered_set<T> ConstructGreedyRandomizedSolution(GraphRepresentation<T> *Graph, unordered_set<T> seed, double alpha, double lambda, int priorityFunction, bool valueBased, float sizePercentage)
 {
 	
-	float sizePercentage=30;
 	bool isCompleteSolution = false;
 	unordered_set<T>  currentSolution = seed;
 	cout << seed.size() << endl;
 	RCL <T> * restrCandidateList;
 	if(priorityFunction==1)
-		restrCandidateList = new RCL<T> (currentSolution, Graph, alpha, lambda, isCompleteSolution, sizePercentage);
+		restrCandidateList = new RCL<T> (currentSolution, Graph, alpha, lambda, isCompleteSolution, sizePercentage, valueBased);
 	else 
-		 restrCandidateList = new RCL<T>(currentSolution, Graph, alpha, lambda, isCompleteSolution, sizePercentage,priorityFunction);
-	
-	
-	
+		 restrCandidateList = new RCL<T>(currentSolution, Graph, alpha, lambda, isCompleteSolution, sizePercentage,priorityFunction, valueBased);
+		
 	while (isCompleteSolution==false)
 	{
 		currentSolution.insert(restrCandidateList->selectAtRandom());
 		if (priorityFunction == 1)
-			restrCandidateList = new RCL<T>(currentSolution, Graph, alpha, lambda, isCompleteSolution,sizePercentage);
+			restrCandidateList = new RCL<T>(currentSolution, Graph, alpha, lambda, isCompleteSolution,sizePercentage, valueBased);
 		else 
-			restrCandidateList = new RCL<T>(currentSolution, Graph, alpha, lambda, isCompleteSolution, sizePercentage,priorityFunction);
+			restrCandidateList = new RCL<T>(currentSolution, Graph, alpha, lambda, isCompleteSolution, sizePercentage,priorityFunction, valueBased);
 	}
 
 	delete restrCandidateList;
@@ -44,7 +41,7 @@ unordered_set<T> ConstructGreedyRandomizedSolution(GraphRepresentation<T> *Graph
 }
 
 template<typename T>
-unordered_set<T> GRASProcedure(GraphRepresentation<T> *Graph,  double alpha, double lambda, double timelimit, double &endtime,int priorityFunction)
+unordered_set<T> GRASProcedure(GraphRepresentation<T> *Graph,  double alpha, double lambda, double timelimit, double &endtime,int priorityFunction, bool bestImprovement,bool valueBased, int expectedValue, float sizePercentage)
 {
 	time_t start = time(NULL);
 	unordered_set<T> bestSolution;
@@ -55,13 +52,13 @@ unordered_set<T> GRASProcedure(GraphRepresentation<T> *Graph,  double alpha, dou
 	bestSolution = seeds;
 	 endtime = difftime(time(NULL), start);
 
-	while (timelimit>endtime&& seeds.size()>0)
+	while (timelimit>endtime&& seeds.size()>0 && (bestSolution.size() < expectedValue))
 	
 	{
 		//Building a solution
-		currentSolution = ConstructGreedyRandomizedSolution(Graph, seeds, alpha, lambda,priorityFunction);
+		currentSolution = ConstructGreedyRandomizedSolution(Graph, seeds, alpha, lambda,priorityFunction, valueBased,  sizePercentage);
 		//Local Search
-		currentSolution = oneFilp(currentSolution, Graph, alpha, lambda, priorityFunction);
+		currentSolution = oneFilp(currentSolution, Graph, alpha, lambda, priorityFunction, bestImprovement);
 		endtime = difftime(time(NULL), start);
 		//Updating the best solution
 		if (currentSolution.size() > bestSolution.size())

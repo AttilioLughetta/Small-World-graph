@@ -29,7 +29,11 @@ public:
 	 virtual  bool addEdge(T a, T b) { return false; };
 
 
-
+	 ~GraphRepresentation<T>()
+	 {
+		 if(!dist.empty())
+			dist.clear();
+	 }
 	 void setParam(int e, bool o, bool sl)
 	{
 		n = e;

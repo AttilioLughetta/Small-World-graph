@@ -176,6 +176,7 @@
     <ClInclude Include="OneFlip.h" />
     <ClInclude Include="RestrictedCandidateList.h" />
     <ClInclude Include="priorityFunction.h" />
+    <ClInclude Include="SimulatedAnnealing.h" />
     <ClInclude Include="Triangless.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="MinimumLocalClustering.h" />

@@ -28,6 +28,8 @@ class GraphT : public GraphRepresentation<T>
 	~GraphT()
 	{
 		str.clear();
+		GraphRepresentation<T>::~GraphRepresentation();
+		
 	}
 
 	int getN() const
