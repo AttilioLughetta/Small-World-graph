@@ -29,10 +29,16 @@ public:
 	 virtual  bool addEdge(T a, T b) { return false; };
 
 
-	 ~GraphRepresentation<T>()
+	 virtual ~GraphRepresentation<T>()
 	 {
-		 if(!dist.empty())
-			dist.clear();
+
+
+		 if (!dist.empty())
+		 {
+			 unordered_map<T, unordered_map<T, int>>().swap(dist);
+			 dist.clear();
+
+		 }
 	 }
 	 void setParam(int e, bool o, bool sl)
 	{

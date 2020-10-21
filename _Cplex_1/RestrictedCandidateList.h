@@ -11,11 +11,10 @@ template<typename T>
 class RCL
 {
 	vector<T> verteces;
-	GraphRepresentation<T> *graph;
 	unordered_map<T, int> degrees;
 
 
-	bool priorityFunction1(T a, T b)
+	bool priorityFunction1(T a, T b, GraphRepresentation<T> *graph)
 	{
 		if (graph->getDegree(a) > graph->getDegree(b))
 			return true;
@@ -40,7 +39,7 @@ class RCL
 
 
 
-	void sortVertices()
+	void sortVertices(GraphRepresentation<T>* graph)
 	{
 		int i, k;
 		int N = verteces.size();
@@ -49,7 +48,7 @@ class RCL
 		do {
 			k = 0;
 			for (i = 0; i < N - 1; i++)
-				if (priorityFunction1(verteces[i + 1], verteces[i]))
+				if (priorityFunction1(verteces[i + 1], verteces[i], graph))
 				{
 					temp = verteces[i];
 					verteces[i] = verteces[i + 1];
@@ -59,7 +58,7 @@ class RCL
 		} while (k == 1);
 	}
 
-	void sortVertices2()
+	void sortVertices2(GraphRepresentation<T>* graph)
 	{
 		int i, k;
 		int N = verteces.size();
@@ -83,33 +82,35 @@ public:
 
 	~RCL()
 	{
+		vector<T>().swap( verteces);
+		unordered_map<T, int>().swap( degrees);
 		verteces.clear();
 		degrees.clear();
-	}
 
+	}
+	RCL()
+	{
+	}
 	//1° priority function
 	RCL(unordered_set<T> CurrentSolutionSet, GraphRepresentation<T> *g, double alpha, double lambda, bool & full,float sizePercentage, bool valueBased)
 	{
 		full = false;
-		graph = g;
 		verteces.clear();
 		GraphRepresentation<T> *currSolution = g->induction(CurrentSolutionSet);
 		cout << currSolution->getAllVertices().size() << endl;
-
+		delete currSolution;
 		for (T element : g->getNeighborsFromVertices(CurrentSolutionSet))
 		{
 			currSolution = g->inductionV(CurrentSolutionSet, element);// togliere deleteVertex e vertex induction
-			//currSolution = currSolution->vertexInduction(element, g);
 			double mLAD = maxLocalAverageDistance(currSolution);
 			double mLC = minimumLocalCluster(currSolution);
-			//cout << currSolution->getAllVertices().size()<<" mLad e mlc : "<<mLAD<<"  "<<mLC <<" "<<currSolution->getN()<< endl;
-			//currSolution->deleteVertex(element);
-			//cout << currSolution->getAllVertices().size() << endl;
-			
+
+			delete currSolution;
 			if ((mLAD <= lambda) && (mLC >= alpha))
 				verteces.push_back(element);
 		}
 		
+		//Full solution
 		if (verteces.size() == 0)
 		{
 			
@@ -117,7 +118,7 @@ public:
 			return ;
 		}
 		
-		sortVertices();
+		sortVertices(g);
 
 		int newsize;
 		if(! valueBased)
@@ -151,7 +152,7 @@ public:
 		GraphRepresentation<T> *currSolution = graph->induction(CurrentSolutionSet);
 		cout << currSolution->getAllVertices().size() << endl;
 		unordered_map <T, int> tmp;
-
+		delete currSolution;
 		for (T element : graph->getNeighborsFromVertices(CurrentSolutionSet))
 		{
 			currSolution = graph->inductionV(CurrentSolutionSet, element);// togliere deleteVertex e vertex induction
@@ -168,6 +169,7 @@ public:
 				int deg = currSolution->getDegree(element);
 				tmp[element] = deg;
 			}
+			delete currSolution;
 		}
 
 		if (verteces.size() == 0)
@@ -178,7 +180,7 @@ public:
 		}
 
 		this->degrees = tmp;
-		sortVertices2();
+		sortVertices2(graph);
 
 		int newsize;
 		if (!valueBased)

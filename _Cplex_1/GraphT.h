@@ -25,10 +25,14 @@ class GraphT : public GraphRepresentation<T>
 
 	}
 
-	~GraphT()
+	~GraphT()override
 	{
-		str.clear();
-		GraphRepresentation<T>::~GraphRepresentation();
+		if (!str.empty())
+		{
+			unordered_map<T, unordered_set<T>>().swap(str);
+			str.clear();
+		}
+		
 		
 	}
 
@@ -254,6 +258,7 @@ bool newEdge(T source, T destination)
 
 		str.erase(source);
 		str.emplace(pair<T, unordered_set<T>>(source, tmp));
+		unordered_set <T>().swap(tmp);
 		tmp.clear();
 
 
@@ -265,7 +270,8 @@ bool newEdge(T source, T destination)
 
 			str.erase(destination);
 			str.emplace(pair<T, unordered_set<T>>(destination, tmp));
-
+			unordered_set <T>().swap(tmp);
+			tmp.clear();
 
 		}
 		GraphRepresentation<T>::setN(this->str.size());

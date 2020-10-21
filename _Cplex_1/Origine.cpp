@@ -12,39 +12,40 @@
 #include<ctime>
 #include "Grasp.h"
 #include "SimulatedAnnealing.h"
+#include "IteratedLocalSearch.h"
 using namespace std;
 
 
 
 int main(int argc, char *argv[])
 {
-	
-	string fileName ="queen";
+
+	vector <string> filenames = {/* "fb-pages-tvshow", "soc-hamsterster","anna", "G56", "socfb-Caltech36" , "airfoil1"*/"anna", "delaunay_n12","D_9","G37"/*, "jean", "anna","dolphins","david", "queen8","adjnoun"*/};
+	vector <int> expectedSolutions = { 16,4,5,10,100000,10000,10000,10000,10000,100000,10000000,1000000,1000000,1000000,100000,1000000};
+	double endtime;
+	 //prova(350, endtime, 100000, 0.75) ;
+	cout<<endl<<endtime;
 	bool random = false;
-	double alpha = 0.5;
-	double lambda = 2.0;
+	double alpha = 0.7;
+	double lambda = 1.7;
 	int nvertex=138;
 	int nedge=493;
+	//Grasp Parameter
 	int GraspSeconds = 300;
-	int SAtimelimit = 100;
 	float sizePercentage = 60;
 	bool bestImprovement = true;
 	bool valueBased = false;
+	//Simulated Annealing Parameter
+	int SAtimelimit = 3;
+	double redCoeff = 0.75;
+	int redRule = 1;
+	//Iterated Local Search
+	double omega = 0.3;
 	
 	
 	
-	if (argc > 2)
-	{
-		float sizePercentage = atoi(argv[1]);
-		
-		if (atoi(argv[2]) == 1)
-			bool bestImprovement = true;
-		if (atoi(argv[3]) == 1)
-			bool valueBased = true;
-	}
-
 	int expectedSolution = 10;
-
+	string fileName = "queen";
 	double seconds = 0;
 	int count=0 ;
 	vector <int> result;
@@ -53,7 +54,7 @@ int main(int argc, char *argv[])
 	char buffer[80];
 	struct tm *localTime = localtime(&currentTime);
 	
-	//strftime(buffer, 80, "Log\\Result_%I_%M_%p_%d_%m_%Y.txt", localTime);
+	
 	strftime(buffer, 80, "Log\\Migliorativi.txt", localTime);
 
 
@@ -62,10 +63,8 @@ int main(int argc, char *argv[])
 	if (!f)
 		return -1;
 
-	//vector <string> filenames = { "david" };
-	vector <string> filenames = {/*"anna"* "dolphins",*/ "David"};
-	//vector <int> expectedSolutions = {33,50, 10,11,12,13,15 };
-	vector <int> expectedSolutions = {40,200,200 };
+
+	
 	for(int a=0;a<filenames.size();a++ )
 	{
 		
@@ -89,23 +88,72 @@ int main(int argc, char *argv[])
 		
 		g->draw();
 		cplexSolver *Solver = new cplexSolver(g);
-		
+		int edgeNumber = 0;
+		for (int a : g->getAllVertices())
+			edgeNumber = edgeNumber + g->getDegree(a);
+
+		edgeNumber = edgeNumber / 2;
+
+
+
 		f << "Graph created" << endl;
 		if (random)
 			f << buffer << "Run n# " << count << " with nvertex:" << g->getN() << " and nedge :" << nedge << endl;
 		else
-			f << buffer << "Run n# " << count << " on " << fileName << " Dataset" << endl;
+			f << buffer << "Run n# " << count << " on " << fileName <<"( V = "<<g->getN()<<" , E = "<<edgeNumber<<" )"<< " Dataset - alpha: "<<alpha<<" lambda: "<<lambda << endl;
+
+
+		double minSec = 100000;
+
+		//Idf algo
+		try {
+			int function = 1;
+			do {
+				function++;
+				time(&currentTime);
+				char buffer[80];
+				struct tm *localTime = localtime(&currentTime);
+				strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);
+				f << buffer << "Risultati Idf" << function << ":   ";
+				unordered_set<int> best;
+
+				best = idfAlgo<int>(alpha, lambda, g, seconds, function, expectedSolution);
+				f << best.size() << "  ::: ";
+				for (auto a : best)
+					f << a << " ";
+				f << " in " << seconds << " seconds";
+				f << endl;
+				if (minSec > seconds)
+					minSec = seconds;
+				
+			} while (function < 2);
+		}
+		catch (exception) {
+			f << endl;
+			f << "Crash Idf" << endl;
+		}
+
+
+	
+		//minSec = 10;
+		
+		
 
 		//Grasp
 		
 		try {
 			int function = 0;
+				function++;
 			do {
 				function++;
 				unordered_set<int> bests;
-				 
+
+				// Grasp limit (seconds) = idf  seconds
+				GraspSeconds = minSec;
+
+
 				if(g->getN()>0)
-					//bests = GRASProcedure(g, alpha, lambda, GraspSeconds, seconds,function,bestImprovement,valueBased, expectedSolution, sizePercentage);
+					bests = GRASProcedure(g, alpha, lambda, GraspSeconds, seconds,function,bestImprovement,valueBased, expectedSolution, sizePercentage);
 			
 				time(&currentTime);
 				struct tm *localTime = localtime(&currentTime);
@@ -127,10 +175,9 @@ int main(int argc, char *argv[])
 			do {
 				function++;
 				unordered_set<int> bests;
-
+				SAtimelimit = minSec;
 				if (g->getN() > 0)
-
-					bests = SAProcedure(g, SAtimelimit, seconds, alpha, lambda, function, 100000, 0.9, 1, 12345, 1000, expectedSolution);
+					bests = SAProcedure(g, SAtimelimit, seconds, alpha, lambda, function, 100000, redCoeff, redRule, 12345, 1000, expectedSolution);
 					
 				time(&currentTime);
 				struct tm *localTime = localtime(&currentTime);
@@ -138,7 +185,7 @@ int main(int argc, char *argv[])
 				f << buffer << "Risultati Simulated Anealing" << function << ":  " << bests.size() << "  ::: ";
 				for (auto a : bests)
 					f << a << " ";
-				f << " in " << seconds << " seconds con TL a: " << SAtimelimit << endl;
+				f << " in " << seconds << " seconds con TL a: " << SAtimelimit <<" e Coefficente di riduzione : "<<redCoeff << endl;
 			} while (function < 2);
 		}
 		catch (exception_ptr) {
@@ -147,7 +194,35 @@ int main(int argc, char *argv[])
 		}
 
 
+		//Iterated Local Search
 
+		try {
+			int function = 0;
+			
+			do {
+				function++;
+				unordered_set<int> bests;
+
+				// ILS limit (seconds) = idf  seconds
+				double ILSSeconds = minSec;
+
+
+				if (g->getN() > 0)
+					bests = ILSProcedure(g, alpha, lambda, ILSSeconds, seconds, function, bestImprovement, expectedSolution, omega);
+					
+				time(&currentTime);
+				struct tm *localTime = localtime(&currentTime);
+				strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);
+				f << buffer << "Risultati IteratedLocalSearch" << function << ":  " << bests.size() << "  ::: ";
+				for (auto a : bests)
+					f << a << " ";
+				f << " in " << seconds << " seconds con TL a: " << ILSSeconds << endl;
+			} while (function < 2);
+		}
+		catch (exception_ptr) {
+			f << endl;
+			f << "Crash ILS" << endl;
+		}
 
 
 
@@ -176,30 +251,6 @@ int main(int argc, char *argv[])
 			f << endl;
 			f << "Crash Solver" << endl;
 		}
-		//Idf algo
-		try {
-			int function = 0;
-			do {
-				function++;
-				time(&currentTime);
-				char buffer[80];
-				struct tm *localTime = localtime(&currentTime);
-				strftime(buffer, 80, "%I:%M%p-%d/%m/%Y:     ", localTime);
-				f << buffer << "Risultati Idf"<<function<<":   ";
-				unordered_set<int> best;
-				//best = idfAlgo<int>(alpha, lambda, g, seconds, function, expectedSolution);
-				f << best.size() << "  ::: ";
-				for (auto a : best)
-					f << a << " ";
-				f << " in " << seconds << " seconds";
-				f << endl;
-			} while (function < 2);
-		}
-		catch (exception) {
-			f << endl;
-			f << "Crash Idf" << endl;
-		}
-		
 		
 		//Deleting Object
 		delete g;

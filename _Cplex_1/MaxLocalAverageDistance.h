@@ -30,5 +30,6 @@ double maxLocalAverageDistance(GraphRepresentation<T> *g)
 		c = lad<T>(g, i);
 		max = c > max ? c : max;
 	}
+
 	return max;
 }

@@ -78,7 +78,10 @@ class sortedVerteces
 
 private:
 public:
-	
+	bool isEmpty()
+	{
+		return verteces.empty();
+	}
 	~sortedVerteces()
 	{
 		verteces.clear();

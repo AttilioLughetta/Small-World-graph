@@ -13,7 +13,7 @@
 #include <random>
 
 
-//Aggiungere seed per il random, il ciclo
+
 template<typename T>
 unordered_set<T> SAProcedure(GraphRepresentation<T> *Graph, double timelimit, double &endtime, double alpha, double lambda, int priorityFunction, double t0, double tReductionCostant, int reductionRule, int seed, int maxIteration,int expectedValue)
 {
@@ -21,19 +21,20 @@ unordered_set<T> SAProcedure(GraphRepresentation<T> *Graph, double timelimit, do
 	unordered_set<T> bestSolution;
 	unordered_set<T> currentSolution;
 	unordered_set<T> neighborSolution;
-	Triangles<T> *triangle = new Triangles<T>(Graph);
 	double t = t0;
 	int currIteration = 0;
 	endtime = difftime(time(NULL), start);
 
-	//
-	bestSolution = triangle->popAsSet();
+	
+	bestSolution = Triangles<T>::getSingleTriangle(Graph);
 	currentSolution = bestSolution;
 	double random;
 	
 	//Simulated Annealing Loop
-	while (timelimit > endtime&& t > 0 && (bestSolution.size() < expectedValue) && currIteration < maxIteration)
+	while (timelimit > endtime&& t > 0 && (bestSolution.size() < expectedValue)/* && currIteration < maxIteration*/)
 	{
+		bool toCompute = true;
+		double prob = 1.00;
 		//Local Search
 		neighborSolution = randNeighbor(currentSolution, Graph, alpha, lambda, priorityFunction, seed);
 		//Updating the best solution
@@ -46,10 +47,14 @@ unordered_set<T> SAProcedure(GraphRepresentation<T> *Graph, double timelimit, do
 			std::uniform_int_distribution<> dist(0, RAND_MAX);
 			double random = dist(rng);
 			random =  random / ((double)RAND_MAX + 1.0);
-		
+			
 			//Probability check
-			cout << "\nProbabilità : " << probabilityOfAcceptance(currentSolution.size(), neighborSolution.size(), t);
-			if (probabilityOfAcceptance(currentSolution.size(), neighborSolution.size(), t) > random)
+			if(toCompute)
+				prob = probabilityOfAcceptance(currentSolution.size(), neighborSolution.size(), t);
+			if (prob <= 0.001)
+				toCompute = false;
+			cout << "\nProbabilità : " << prob;
+			if ( prob > random)
 				currentSolution = neighborSolution;
 		}
 		
@@ -89,5 +94,24 @@ double probabilityOfAcceptance(int best, int curr, double t)
 	double d = - ( ( (double) best -  (double) curr) / t ) ;
 	return pow(e, d);
 
+
+}
+
+
+
+
+void prova(double timelimit, double & endtime, double t, double alpha)
+{
+	double e = 2.71828182846;
+	
+	time_t start = time(NULL);
+	endtime = difftime(time(NULL), start);
+
+	while (timelimit > endtime&& t > 0)
+	{
+		t = t * alpha;
+		double d = -(2.0/ t);
+		cout<<endl<< pow(e, d);
+	}
 
 }

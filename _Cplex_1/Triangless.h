@@ -151,6 +151,25 @@ public:
 		this->triangles.clear();
 		
 	}
+	
+	static unordered_set<T> getSingleTriangle(GraphRepresentation<T> *graph)
+	{
+		for (T x : graph->getAllVertices())
+		{
+			for (T y : graph->getNeighbors(x))
+				for (T z : graph->getNeighbors(y))
+					if (graph->hasEdge(x, z))
+					{
+						unordered_set<T> res;
+						res.insert(x); res.insert(y); res.insert(z);
+						return res;
+					}
+
+
+		}
+	}
+
+
 
 
 	
