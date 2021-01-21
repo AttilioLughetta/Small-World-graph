@@ -230,7 +230,10 @@ public:
 	}
 
 
-
+	int size()
+	{
+		return triangles.size();
+	}
 
 
 	bool empty()

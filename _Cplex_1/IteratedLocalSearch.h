@@ -19,22 +19,66 @@ unordered_set<T> ILSProcedure(GraphRepresentation<T> *Graph, double alpha, doubl
 
 
 	endtime = difftime(time(NULL), start);
-	
+
 	unordered_set<T> bestSolution;
 	unordered_set<T> currentSolution;
 	unordered_set<T> toExclude;
-	bestSolution = Triangles<T>::getSingleTriangle(Graph);
+	//Seed
+	//bestSolution = Triangles<T>::getSingleTriangle(Graph);
+	//Best Greedy Seed
+	bestSolution = Triangles<T>(Graph).popAsSet();
+
 	currentSolution = bestSolution;
-	
+
 	while (timelimit > endtime && (bestSolution.size() < expectedValue))
 	{
-		currentSolution = oneFilp(currentSolution, Graph, alpha, lambda, priorityFunction, bestImprovement,toExclude);
+		currentSolution = oneFilp(currentSolution, Graph, alpha, lambda, priorityFunction, bestImprovement, toExclude);
 		if (currentSolution.size() > bestSolution.size())
 			bestSolution = currentSolution;
-		currentSolution = perturbationFunction(currentSolution, omega,toExclude);
+		currentSolution = perturbationFunction(currentSolution, omega, toExclude);
 		endtime = difftime(time(NULL), start);
 	}
-	
+
+	return bestSolution;
+
+}
+
+
+template<typename T>
+unordered_set<T> ILSProcedure(GraphRepresentation<T> *Graph, double alpha, double lambda, double timelimit, double &endtime, int priorityFunction, bool bestImprovement, int expectedValue, double omega, map<int, double>* map)
+{
+	time_t start = time(NULL);
+
+
+	endtime = difftime(time(NULL), start);
+
+	unordered_set<T> bestSolution;
+	unordered_set<T> currentSolution;
+	unordered_set<T> toExclude;
+	//Seed
+	//bestSolution = Triangles<T>::getSingleTriangle(Graph);
+	//Best Greedy Seed
+	bestSolution = Triangles<T>(Graph).popAsSet();
+
+	currentSolution = bestSolution;
+	(*map)[currentSolution.size()] = difftime(time(NULL), start);
+	while (timelimit > endtime && (bestSolution.size() < expectedValue))
+	{
+		currentSolution = oneFilp(currentSolution, Graph, alpha, lambda, priorityFunction, bestImprovement, toExclude);
+		if (currentSolution.size() > bestSolution.size())
+		{
+			(*map)[currentSolution.size()] = difftime(time(NULL), start);
+			bestSolution = currentSolution;
+
+		}
+		currentSolution = perturbationFunction(currentSolution, omega, toExclude);
+
+		if (currentSolution.size() > bestSolution.size())
+			(*map)[currentSolution.size()] = difftime(time(NULL), start);
+
+		endtime = difftime(time(NULL), start);
+	}
+
 	return bestSolution;
 
 }

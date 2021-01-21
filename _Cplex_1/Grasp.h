@@ -42,7 +42,7 @@ unordered_set<T> ConstructGreedyRandomizedSolution(GraphRepresentation<T> *Graph
 }
 
 template<typename T>
-unordered_set<T> GRASProcedure(GraphRepresentation<T> *Graph, double alpha, double lambda, double timelimit, double &endtime, int priorityFunction, bool bestImprovement, bool valueBased, int expectedValue, float sizePercentage)
+unordered_set<T> GRASProcedure(GraphRepresentation<T> *Graph, double alpha, double lambda, double timelimit, double &endtime, int priorityFunction, bool bestImprovement, bool valueBased, int expectedValue, float sizePercentage, map<int,double> * map)
 {
 	time_t start = time(NULL);
 	unordered_set<T> bestSolution;
@@ -52,6 +52,7 @@ unordered_set<T> GRASProcedure(GraphRepresentation<T> *Graph, double alpha, doub
 	unordered_set<T> seeds = t->popAsSet();
 	bestSolution = seeds;
 	endtime = difftime(time(NULL), start);
+	(*map)[bestSolution.size()] = difftime(time(NULL), start);
 
 
 
@@ -65,7 +66,57 @@ unordered_set<T> GRASProcedure(GraphRepresentation<T> *Graph, double alpha, doub
 		endtime = difftime(time(NULL), start);
 		//Updating the best solution
 		if (currentSolution.size() > bestSolution.size())
+		{
 			bestSolution = currentSolution;
+			(*map)[bestSolution.size()] = difftime(time(NULL), start);
+		}
+
+		currentSolution.clear();
+		seeds.clear();
+		if (!t->empty())
+			seeds = t->popAsSet();
+		else
+			break;
+	}
+
+	currentSolution.clear();
+	delete t;
+	seeds.clear();
+
+	endtime = difftime(time(NULL), start);
+	return bestSolution;
+
+}
+
+
+template<typename T>
+unordered_set<T> GRASProcedure(GraphRepresentation<T> *Graph, double alpha, double lambda, double timelimit, double &endtime, int priorityFunction, bool bestImprovement, bool valueBased, int expectedValue, float sizePercentage )
+{
+	time_t start = time(NULL);
+	unordered_set<T> bestSolution;
+	unordered_set<T> currentSolution;
+	//Choosing a triangle as a seed
+	Triangles<T> *t = new Triangles<T>(Graph);
+	unordered_set<T> seeds = t->popAsSet();
+	bestSolution = seeds;
+	endtime = difftime(time(NULL), start);
+	
+
+
+
+	while (timelimit > endtime&& seeds.size() > 0 && (bestSolution.size() < expectedValue))
+
+	{
+		//Building a solution
+		currentSolution = ConstructGreedyRandomizedSolution(Graph, seeds, alpha, lambda, priorityFunction, valueBased, sizePercentage);
+		//Local Search
+		currentSolution = oneFilp(currentSolution, Graph, alpha, lambda, priorityFunction, bestImprovement);
+		endtime = difftime(time(NULL), start);
+		//Updating the best solution
+		if (currentSolution.size() > bestSolution.size())
+		{
+			bestSolution = currentSolution;
+		}
 
 		currentSolution.clear();
 		seeds.clear();
